@@ -24,11 +24,15 @@ routes to the appropriate SKILL.md automatically in every workspace — no per-r
      "/your/path/to/budget-ai-instructions": true
    }
    ```
+   example: `"~/Skywalker/budget/budget-ai-instructions/.instructions.md": true,`
+
    If the key already exists, add the new entry alongside any existing ones.
 
 4. **Reload the window** (`Ctrl+Shift+P` → *Reload Window*).
 
 5. **Verify** by opening any of your repositories and asking Copilot: "What repository rules apply here?"
+
+![instructions settings](image.png)
 
 > **Note:** This setting lives in your personal VS Code profile, not in any repo. Each team member
 > performs this setup once after cloning.
