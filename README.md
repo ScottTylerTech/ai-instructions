@@ -32,17 +32,21 @@ routes to the appropriate SKILL.md automatically in every workspace — no per-r
 
 5. **Verify** by opening any of your repositories and asking Copilot: "What repository rules apply here?"
 
-![instructions settings](image.png)
-
 > **Note:** This setting lives in your personal VS Code profile, not in any repo. Each team member
-> performs this setup once after cloning.
+> performs this setup once after cloning.  You will not be able to manually add the instruction file 
+> from the chat settings.  It must be set via your user settings in VS code.
+
+
+
+![instructions settings](public/images/image.png)
+
 
 ## Use
 The main instruction file is hardcoded in the setup and reads from an external repository.
 Because of this, when a chat session is started you will be asked to allow reading outside the working directory.  
 **Click allow**.
 This is a limitation to housing the AI skills in its own repository.
-![allow-in-session](image-1.png)
+![allow-in-session](public/images/image-1.png)
 
 
 ## How To Add A New Skill
@@ -76,8 +80,33 @@ Use these prompts in Copilot Chat to validate skill routing.
 ### Tools
 - What command safety checks should I follow before running build or migration scripts?
 
+## Customizing Agent Personality
+
+The `## Agent Personality` section at the bottom of `.instructions.md` is an optional block for giving
+the model a team-specific tone or persona. It is commented out by default.
+
+**When to use it:** Claude models (e.g. `Claude Sonnet`, `Claude Opus`) respond especially well to
+explicit persona instructions. If your team uses Claude as the primary model in VS Code Copilot,
+filling this section in can make responses feel more consistent with your team's preferred style.
+
+**How to fill it in:**
+
+1. Open `.instructions.md` and locate the `## Agent Personality` section at the bottom.
+2. Remove the `<!--` / `-->` comment markers.
+3. Replace the placeholder lines with your team's preferences. Example:
+   ```
+   ## Agent Personality
+   - Tone: direct and concise
+   - Voice: senior engineer peer — skip preamble, lead with the answer
+   - Avoid: excessive caveats, marketing language, and emojis
+   ```
+4. Save the file and reload the VS Code window (`Ctrl+Shift+P` → *Reload Window*).
+
+> **Note:** These instructions apply to all models that load the file, not just Claude. If a
+> setting produces unwanted results with a different model, comment it out or remove it.
+
 ## Troubleshooting Skill Activation
-- If responses are generic,ensure the .vscode *user* settings were updated, not the local workspace
+- If responses are generic, ensure the .vscode *user* settings were updated, not the local workspace
 - Check VS Code user `settings.json` for a `chat.instructionsFilesLocations` entry pointing to this repo.
 - Reload the VS Code window after any settings change.
 - If a specific skill does not trigger, include domain keywords from that skill description.
