@@ -37,6 +37,14 @@ routes to the appropriate SKILL.md automatically in every workspace — no per-r
 > **Note:** This setting lives in your personal VS Code profile, not in any repo. Each team member
 > performs this setup once after cloning.
 
+## Use
+The main instruction file is hardcoded in the setup and reads from an external repository.
+Because of this, when a chat session is started you will be asked to allow reading outside the working directory.  
+**Click allow**.
+This is a limitation to housing the AI skills in its own repository.
+![allow-in-session](image-1.png)
+
+
 ## How To Add A New Skill
 1. Pick the correct domain folder: backend, frontend, infrastructure, or tools.
 2. Create a focused subfolder and add SKILL.md.
