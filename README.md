@@ -1,6 +1,8 @@
 # Budget AI Skills Repository
 
-This repository contains model-agnostic AI skill guidance tuned for GitHub Copilot in VS Code.
+This repository contains model-agnostic AI skill guidance tuned for GitHub Copilot in VS Code.  
+It can be reconfigured to be model-specific by renaming the `.instruction.md` file accordingly.
+e.g. `.CLAUDE.md` for Anthropic models
 
 ## Repository Layout
 - .instructions.md: root instruction file to load in Copilot chat settings.
@@ -16,7 +18,7 @@ routes to the appropriate SKILL.md automatically in every workspace — no per-r
 
 1. **Clone** this repo to a permanent path on your machine (e.g. `~/repos/budget-ai-instructions`).
 
-2. **Open VS Code user settings** (`Ctrl+Shift+P` → *Preferences: Open User Settings (JSON)*).
+2. **Open VS Code user settings** (`Ctrl+Shift+P` → *Preferences: Open **User** Settings (JSON)*).
 
 3. **Add or merge** the following, replacing the path with your actual clone location:
    ```jsonc
@@ -50,15 +52,24 @@ This is a limitation to housing the AI skills in its own repository.
 
 
 ## How To Add A New Skill
+Below are a few resources for learning about skills.  Fortunately, skills are used universally, but the syntax might differ slightly depending on the model.  This respository is model-agnostic, (for now) our license for Github Copilot has multiple models.  
+
+>Note: If you are developing a skill for this repository, try to make it as model-agnostic as possible.
+
+**OpenAI** - https://openai.com/academy/skills/?utm_source=chatgpt.com
+**Anthropic/ Claude** - https://claude.com/skills
+
 1. Pick the correct domain folder: backend, frontend, infrastructure, or tools.
 2. Create a focused subfolder and add SKILL.md.
 3. Include YAML frontmatter with at least:
    - name
    - description
    - argument-hint
-4. Keep scope narrow and actionable.
+4. Keep scope narrow and actionable - single topics
 5. Add the skill path to .instructions.md Skill Index.
 6. Update the domain README with the new skill and trigger guidance.
+
+Coding agents are particularly good at creating skills for themselves, especially when basing it off of something within our codebase.  The easiest way to create them is to ask an agent to generate one with guidance.  The skills here were all agentically generated.
 
 ## Skill Verification Prompts
 Use these prompts in Copilot Chat to validate skill routing.
@@ -92,15 +103,14 @@ filling this section in can make responses feel more consistent with your team's
 **How to fill it in:**
 
 1. Open `.instructions.md` and locate the `## Agent Personality` section at the bottom.
-2. Remove the `<!--` / `-->` comment markers.
-3. Replace the placeholder lines with your team's preferences. Example:
+2. Replace the placeholder lines with your team's preferences. Example:
    ```
    ## Agent Personality
    - Tone: direct and concise
    - Voice: senior engineer peer — skip preamble, lead with the answer
    - Avoid: excessive caveats, marketing language, and emojis
    ```
-4. Save the file and reload the VS Code window (`Ctrl+Shift+P` → *Reload Window*).
+3. Save the file and reload the VS Code window (`Ctrl+Shift+P` → *Reload Window*).
 
 > **Note:** These instructions apply to all models that load the file, not just Claude. If a
 > setting produces unwanted results with a different model, comment it out or remove it.

@@ -1,5 +1,5 @@
 ---
-name: ngrx-patterns
+name: state-management
 description: 'NgRx global store and component store patterns for this project. Use when writing or reviewing actions, effects, reducers, selectors, state, facade services, or component stores (ComponentStore). Covers operator selection, entity adapter usage, routing effects, pagination actions, and selector testing conventions.'
 argument-hint: 'Describe the NgRx feature, reducer/effect behavior, or selector pattern to implement'
 ---

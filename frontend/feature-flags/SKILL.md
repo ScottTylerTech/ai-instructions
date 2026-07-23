@@ -1,5 +1,5 @@
 ---
-name: frontend-feature-flags
+name: feature-flags
 description: 'Frontend feature flag usage patterns for Angular and TypeScript. Use when wiring NGRX-backed flag loading, consuming flags in components/services, handling maintenance-mode exceptions, and managing temporary flag conditionals with cleanup TODO comments.'
 argument-hint: 'Describe the Angular feature flag flow or component usage to implement or review'
 ---
