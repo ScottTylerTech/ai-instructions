@@ -1,6 +1,6 @@
 # Budget AI Skills Repository
 
-This repository contains model-agnostic AI skill guidance tuned for GitHub Copilot in VS Code.  It can be reconfigured to be model-specific by making a copy of `.instruction.md` and renaming the file accordingly.
+This repository contains model-agnostic AI skill guidance tuned for VS Code Copilot.  It can be reconfigured to be model-specific by making a copy of `.instruction.md` and renaming the file accordingly.
 (e.g. `.CLAUDE.md` for Anthropic models).  When setting up, point the user settings to that file instead of `.instruction.md`
 
 ## Repository Layout
@@ -96,7 +96,7 @@ The `## Agent Personality` section at the bottom of `.instructions.md` is an opt
 the model a team-specific tone or persona. It is commented out by default.
 
 **When to use it:** Claude models (e.g. `Claude Sonnet`, `Claude Opus`) respond especially well to
-explicit persona instructions. If your team uses Claude as the primary model in VS Code Copilot,
+explicit persona instructions. If you use Claude as the primary model in VS Code Copilot,
 filling this section in can make responses feel more consistent with your team's preferred style.
 
 **How to fill it in:**
@@ -115,7 +115,7 @@ filling this section in can make responses feel more consistent with your team's
 > setting produces unwanted results with a different model, comment it out or remove it.
 
 ## Troubleshooting Skill Activation
-- If responses are generic, ensure the .vscode *user* settings were updated, not the local workspace
+- If responses are generic, ensure the .vscode *user* settings were updated, not the local workspace (this file lives in `C:\Users\%user.name%\AppData\Roaming\Code\User\settings.json`)
 - Check VS Code user `settings.json` for a `chat.instructionsFilesLocations` entry pointing to this repo.
 - Reload the VS Code window after any settings change.
 - If a specific skill does not trigger, include domain keywords from that skill description.
