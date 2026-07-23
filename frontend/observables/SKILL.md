@@ -1,5 +1,5 @@
 ---
-name: rxjs-best-practices
+name: observables
 description: 'RxJS best practices for Angular frontends using NgRx. Use when: writing or reviewing component observables, using shareReplay, subscribing to store selectors, managing feature flags, adding takeUntil cleanup, using BehaviorSubject, or deciding between async pipe and manual subscriptions.'
 argument-hint: 'Describe the observable pattern or component code to review or write'
 ---
