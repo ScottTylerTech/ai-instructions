@@ -1,8 +1,7 @@
 # Budget AI Skills Repository
 
-This repository contains model-agnostic AI skill guidance tuned for GitHub Copilot in VS Code.  
-It can be reconfigured to be model-specific by renaming the `.instruction.md` file accordingly.
-e.g. `.CLAUDE.md` for Anthropic models
+This repository contains model-agnostic AI skill guidance tuned for GitHub Copilot in VS Code.  It can be reconfigured to be model-specific by making a copy of `.instruction.md` and renaming the file accordingly.
+(e.g. `.CLAUDE.md` for Anthropic models).  When setting up, point the user settings to that file instead of `.instruction.md`
 
 ## Repository Layout
 - .instructions.md: root instruction file to load in Copilot chat settings.
