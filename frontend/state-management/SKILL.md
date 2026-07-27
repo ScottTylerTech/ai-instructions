@@ -10,6 +10,16 @@ This skill covers the conventions for writing NgRx global store slices and `Comp
 
 ---
 
+## DTO-First Boundary Rule
+
+- Store state and selectors should use frontend/client-facing models (DTO/client entities), not backend persistence entities.
+- Do not import or mirror service data-layer entity types directly in frontend features.
+- If backend swaps contract types (for example, `Stage` -> `StageDTO`, `Department` -> `DepartmentDTO`, `Period` -> `PeriodDTO`), keep reducer/selectors stable by adapting in API/facade mapping layers.
+- Normalize field naming and optionality at the API-service/facade boundary so component state remains predictable.
+- Add selector/reducer tests for contract migrations that change nested collections or related payload structure.
+
+---
+
 ## File Structure
 
 Every global store feature lives in `src/app/store/<domain>/<feature>/` and contains:
