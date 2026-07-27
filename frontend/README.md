@@ -2,6 +2,8 @@
 
 Use frontend skills for Angular component behavior, NgRx patterns, RxJS practices, and resilient UI state handling.
 
+Treat backend/entity schema details as internal to backend services and BBF layers; frontend store and UI code should depend on DTO/client-facing models only.
+
 ## Skills
 - forge-components/SKILL.md: prefer Forge components/services for Angular UI implementation and refactors.
 - feature-flags/SKILL.md: Angular/TypeScript feature-flag loading and consumption patterns.
