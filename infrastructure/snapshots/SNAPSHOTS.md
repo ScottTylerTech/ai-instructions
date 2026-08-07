@@ -119,7 +119,7 @@ For DB-backed services, snapshot behavior is controlled on entities via `ISnapsh
 
 Whenever a new table or foreign key is added or removed, you must mark the entity as `ISnapshottable`. The interface enforces two key properties:
 
-- **Sequence** (required): Integer determining the order in which tables must be restored. Ordering is critical because snapshots are taken and restored **on a table-by-table basis**—foreign key constraints mean restore order matters (parent tables before dependent/child tables).
+- **Sequence** (required): Integer determining the order in which tables must be restored. Ordering is critical because snapshots are taken and restored **on a table-by-table basis**—foreign key constraints mean restore order matters (parent tables before dependent/child tables). **Any time a foreign key is added or removed, or a new table with foreign keys is introduced, you must re-evaluate the `Sequence` value for ALL `ISnapshottable` entities in the service, not just the one you modified.** Adding or removing a dependency—whether on a new table or an existing one—can shift the required restore order for many other tables.
 - **MigrationPointsInTime** (required): A list of migration markers to map snapshot table schemas to a specific DB point-in-time (added post-.NET 10 upgrade; metadata changes don't require migration runs).
 
 ### MigrationPointsInTime Structure
@@ -206,7 +206,7 @@ Why sequence matters: Tenant-specific snapshots are taken and restored **on a ta
 1. Run the SQL script against your database
 2. The script outputs all tables with their assigned **sequence number** (lowest = fewest dependencies, restore first)
 3. Set your table's `Sequence` property to the value from the output
-4. **Validate all other tables** against the output—new foreign keys you add may shift sequence values for existing tables (important!)
+4. **Update ALL other `ISnapshottable` entities** whose sequence values have changed in the output—adding or removing any foreign key can shift the restore order for many tables, not just the one you edited
 
 **Running the script via Docker (local dev):**
 
@@ -374,10 +374,18 @@ Add additional records/data to the table. This data should **NOT** be included i
 
 - [ ] Entity implements `ISnapshottable` interface
 - [ ] `Sequence` value determined using SQL script
-- [ ] `MigrationPointsInTime` includes both `InitialPointInTime` and `StandardPointInTime`
+- [ ] `MigrationPointsInTime` uses only `StandardPointInTime` (tied to the migration that creates this table); do not add `InitialPointInTime` for brand-new tables
 - [ ] Migration point constants reference existing migrations in your repo
-- [ ] Re-run SQL script to validate all other tables' sequence values haven't changed
+- [ ] Re-run SQL script and update `Sequence` on **all** `ISnapshottable` entities whose values changed — adding a new table with foreign keys can shift restore order for existing tables just as adding a FK to an existing table can
 - [ ] Unit test updated with new table in snapshot tables list
+
+## Modifying Foreign Keys: Checklist
+
+This applies any time you add or remove a foreign key on **any** entity, even if you are not adding a new table.
+
+- [ ] Run `DetermineTableRestoreSequence.sql` against the updated database schema
+- [ ] Compare output against current `Sequence` values across **all** `ISnapshottable` entities in the service
+- [ ] Update `Sequence` on every entity whose value has changed—not just the one you edited
 - [ ] Tested snapshot creation locally
 - [ ] Tested snapshot restoration (before-data exists, after-data gone)
 - [ ] Tested snapshot deletion
