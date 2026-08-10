@@ -53,6 +53,12 @@ Use this skill when implementing database schema changes in backend services wit
 
 Run commands from the repository/service root that owns the `DbContext`.
 
+If `dotnet ef` is unavailable in the repo, restore local tools first:
+
+```bash
+dotnet tool restore
+```
+
 ```bash
 # Create migration
 dotnet ef migrations add AddBudgetPeriodTable --context ApplicationDbContext --project <DataProject> --startup-project <ApiProject>
@@ -66,6 +72,16 @@ dotnet ef database update --context ApplicationDbContext --project <DataProject>
 # Roll back one migration (example)
 dotnet ef database update <PreviousMigrationName> --context ApplicationDbContext --project <DataProject> --startup-project <ApiProject>
 ```
+
+## Snapshot-Aware Migration Note
+
+- When adding a new snapshottable table that also needs a new `DatabasePointInTimeConstants` entry, avoid referencing the not-yet-generated migration type too early.
+- Safe sequence:
+1. Add entity/DbContext mapping.
+2. Generate migration.
+3. Add/update `DatabasePointInTimeConstants` to reference the generated migration type.
+4. Point entity `MigrationPointsInTime` to that new constant.
+5. Rebuild and validate.
 
 ## Naming Guidelines
 - Use verb-first names: `AddX`, `RenameXToY`, `DropX`, `CreateXIndex`

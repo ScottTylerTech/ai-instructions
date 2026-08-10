@@ -2,7 +2,42 @@
 
 All repos across ~/git-repositories/{ai,csd,tcp,opa,petreg,terraform}. Format: **What** / **Stack** / **Depends on** / **Used by**.
 
+---
+
+## How to Use This Map
+
+### Architecture Pattern
+
+Budget follows a layered request path:
+
+```
+Frontend (Angular) → BFF (C# ASP.NET) → [Orchestrator] → Backend Service
+```
+
+- **Frontend + BFF are co-located in the same repository.** You can identify these repos by the presence of both Angular/TypeScript and C# code in the same repo. The Angular app and its C# backend-for-frontend live together. Examples: `budget-plans`, `budget-cip-app`, `budget-chart-manager`.
+- **Orchestrators** coordinate multi-service workflows, especially for async or compensating-transaction flows. Their names typically include `orchestrator` (e.g. `budget-operating-orchestrator-svc`, `budget-export-orchestrator-svc`). The orchestrator layer is optional — not every flow goes through one.
+- **Backend services** own domain data and expose versioned APIs. Their names typically end in `-svc` (e.g. `budget-coa-svc`, `budget-config-api`). `budget-api` is a notable exception — it is a core backend service that predates the `-svc` naming convention.
+
+### Naming Convention Exceptions
+
+| Repo           | What it actually is                                                                  |
+| -------------- | ------------------------------------------------------------------------------------ |
+| `budget-api`   | Core backend service (operating budget domain) — name predates the `-svc` convention |
+| `budget-plans` | Frontend + BFF for operating budget plans — name predates the `-app` convention      |
+
+### Using This Map for Functional Discovery
+
+The **Depends on** chain for any frontend/BFF repo describes the full request path for that product area. This means you can use this map to:
+
+- **Find where a feature lives**: Identify the frontend repo for the area you're working in, then follow its dependencies to find the backend service(s) involved.
+- **Understand a user workflow**: The frontend repo (Angular + BFF) contains the UI components, wizard steps, and form flows that define exactly what a user sees and does. Reading the frontend code alongside this map gives a full picture of how a feature works end-to-end — both functionally (user steps) and technically (API calls).
+- **Plan a code change**: Know which repos are involved before writing anything. A change to a proposal creation field likely touches the Angular component, the BFF controller, and the core API — all traceable from `budget-plans → budget-api`.
+- **Test a workflow manually**: If you're unfamiliar with a feature, identify its frontend repo and explore the Angular component structure to understand the user-facing steps, then trace to the BFF and backend to understand what data is required.
+
+---
+
 ## Environments & Deployment
+
 Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (production), each multi-region (us-west-2, us-east-1). Deployment via Argo. Config via Consul (synced from git via git2consul). Infrastructure via Terraform Cloud workspaces.
 
 ---
@@ -38,7 +73,8 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Backend / (~/enlistments/budget/)
-**budget-api** Core operating budget domain API for plans, proposals, line amounts, stage workflows, imports, process logs, and exports (v1-v4 endpoints). Contains some domain breaks that should eventually be split out such as imports, process logs, and exports. Stack: C#, ASP.NET Core 8/.NET 10, EF Core, NSwag. Depends on: PostgreSQL (Npgsql), Tyler.Platform.SDK, Tyler Consul configuration, budget-common-* libraries (configuration, sanitation, chart-of-accounts, source-document, plan-access, feature-flags), TipeCore tenancy/api, AWS tenant-management packages. Used by: budget-config, budget-plans, budget-data-manager, budget-chart-manager, budget-cip-app, budget-file-import-api, budget-business-api, budget-financial-integration, budget-hub-integration, budget-position-orchestrator-svc, budget-operating-orchestrator-svc, budget-export-orchestrator-svc, budget-reporting-orchestrator-svc, budget-migrations-orchestrator-svc, budget-coa-orchestrator-svc, budget-insights-integration, budget-tenant-management-svc.
+
+**budget-api** Core operating budget domain API for plans, proposals, line amounts, stage workflows, imports, process logs, and exports (v1-v4 endpoints). Contains some domain breaks that should eventually be split out such as imports, process logs, and exports. Stack: C#, ASP.NET Core 8/.NET 10, EF Core, NSwag. Depends on: PostgreSQL (Npgsql), Tyler.Platform.SDK, Tyler Consul configuration, budget-common-\* libraries (configuration, sanitation, chart-of-accounts, source-document, plan-access, feature-flags), TipeCore tenancy/api, AWS tenant-management packages. Used by: budget-config, budget-plans, budget-data-manager, budget-chart-manager, budget-cip-app, budget-file-import-api, budget-business-api, budget-financial-integration, budget-hub-integration, budget-position-orchestrator-svc, budget-operating-orchestrator-svc, budget-export-orchestrator-svc, budget-reporting-orchestrator-svc, budget-migrations-orchestrator-svc, budget-coa-orchestrator-svc, budget-insights-integration, budget-tenant-management-svc.
 
 **budget-business-configuration-svc** Backend service for shared budget configuration entities (periods, departments, priorities, strategic goals, stages) used across operating and capital workflows. Represents the repository responsible for holding data specific to configuring budget business functionality. Stack: C#, ASP.NET Core 8/.NET 10, EF Core, NSwag. Depends on: budget-common-plan-access, budget-common-sanitation, Tyler.Platform.SDK, Tyler Consul configuration, TipeCore tenancy/api, AWS setup packages. Used by: budget-config, budget-plans, budget-data-manager, budget-cip-app, plus budget-business-api, budget-financial-integration, budget-hub-integration, budget-position-orchestrator-svc, budget-reporting-orchestrator-svc, budget-export-orchestrator-svc, budget-migrations-orchestrator-svc, budget-insights-integration, and budget-tenant-management-svc.
 
@@ -55,6 +91,7 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Integrations / (~/enlistments/budget/)
+
 **budget-export-orchestrator-svc** Orchestrates asynchronous operating/capital export flows to downstream systems, including export task lifecycle and compensating transaction handling. Stack: C#, ASP.NET Core 8/.NET 10, EF Core, AutoMapper, NSwag. Depends on: budget-api, budget-config-api, budget-file-import-api, budget-business-configuration-svc, budget-coa-svc, budget-cip-svc, budget-integration-config-svc, budget-scorecard-svc, budget-document-svc. Used by: budget-plans, budget-cip-app.
 
 **budget-file-import-api** Backend import API for file ingestion and processing (including CSV import/export templates), with dataset processing endpoints and queued import execution. The service takes in a files and creates a C# entity object that represents that file, which can then be used by other services for import. Stack: C#, ASP.NET Core 8/.NET 10, EF Core (SQLite), CsvHelper, NSwag. Depends on: budget-api, budget-business-api. Used by: budget-chart-manager, budget-config, budget-data-manager, budget-export-orchestrator-svc.
@@ -74,6 +111,7 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Orchestrators / (~/enlistments/budget/)
+
 **budget-business-api** Business-domain orchestration API for processing/import pipelines across datasets, accounts, segment codes, financial data, and position forecasts. Stack: C#, ASP.NET Core 8/.NET 10, EF Core (SQLite), NSwag. Depends on: budget-api, budget-coa-svc, budget-business-configuration-svc. Used by: budget-common, budget-config, budget-data-manager, budget-file-import-api, budget-financial-integration, budget-migrations-orchestrator-svc.
 
 **budget-coa-orchestrator-svc** Orchestrates chart-of-accounts operations across account structures, accounts, and segments. Stack: C#, ASP.NET Core 8/.NET 8, EF Core (SQLite), NSwag. Depends on: budget-api, budget-coa-svc. Used by: external/direct HTTP consumers.
@@ -87,6 +125,7 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Budget SDKs & Libraries (~/enlistments/budget/)
+
 **budget-common** Shared .NET library suite for cross-cutting Budget capabilities used across APIs, orchestrators, and BFF backends (configuration, security, permissions, feature flags, notifications, plan access, reporting, process discovery/logging, sanitation, content/document helpers). Stack: C# /.NET 10 class libraries (NuGet). Depends on: budget-config-api, budget-business-api, budget-integration-config-svc, budget-document-svc. Used by: budget-api, budget-business-api, budget-business-configuration-svc, budget-chart-manager, budget-cip-app, budget-cip-svc, budget-coa-orchestrator-svc, budget-coa-svc, budget-config, budget-config-api, budget-dashboard-app, budget-data-manager, budget-export-orchestrator-svc, budget-file-import-api, budget-financial-integration, budget-hub-integration, budget-insights-integration, budget-integration-config-app, budget-migrations-orchestrator-svc, budget-operating-orchestrator-svc, budget-organization-config-app, budget-plans, budget-position-orchestrator-svc, budget-reporting-orchestrator-svc, budget-scorecard-app, budget-scorecard-svc, budget-spatial-integration-svc, budget-user-management.
 
 **budget-shared-components** Shared Angular UI/component library for Budget frontends, including reusable tables/grids, notifications, dialogs, validation/directives, guards, and shared stores/services. Stack: TypeScript, Angular 21, RxJS, NgRx, AG Grid (npm). Depends on: tipe-core-components. Used by: budget-chart-manager, budget-cip-app, budget-config, budget-dashboard-app, budget-data-manager, budget-integration-config-app, budget-organization-config-app, budget-plans, budget-scorecard-app, budget-user-management.
@@ -94,6 +133,7 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Tipe SDKs and Libraries(~/enlistments)
+
 **tipe-core-components** Shared Angular foundation library for auth/session-aware UI behaviors, reusable shell components, directives, guards, interceptors, and shared client-side models used across Budget frontends. Stack: TypeScript, Angular 19, RxJS, NgRx, Forge peers (npm). Depends on: none (budget repos). Used by: budget-chart-manager, budget-cip-app, budget-config, budget-dashboard-app, budget-data-manager, budget-integration-config-app, budget-organization-config-app, budget-plans, budget-scorecard-app, budget-user-management, budget-shared-components, tipe-accelerator-web-app.
 
 **tipe-core** Shared .NET platform library suite for service-level cross-cutting infrastructure (API conventions, tenancy context, configuration, authorization, compensating transactions, tenant management, HTTP helpers, navigation, file utilities, feature flags, and testing contracts/utilities). Stack: C# /.NET 10 class libraries (NuGet). Depends on: none (budget repos). Used by: budget-api, budget-business-api, budget-business-configuration-svc, budget-chart-manager, budget-cip-app, budget-cip-svc, budget-clientprovisioning-lambda, budget-coa-orchestrator-svc, budget-coa-svc, budget-common, budget-config, budget-config-api, budget-dashboard-app, budget-data-manager, budget-document-svc, budget-export-orchestrator-svc, budget-file-import-api, budget-financial-integration, budget-hub-integration, budget-insights-integration, budget-integration-config-app, budget-integration-config-svc, budget-migrations-orchestrator-svc, budget-operating-orchestrator-svc, budget-organization-config-app, budget-plans, budget-position-orchestrator-svc, budget-reporting-orchestrator-svc, budget-scorecard-app, budget-scorecard-svc, budget-spatial-integration-svc, budget-tenant-management-svc, budget-user-management, tipe-accelerator-efcore-svc, tipe-accelerator-svc, tipe-accelerator-web-app.
@@ -103,6 +143,7 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Tipe accelerators(~/enlistments)
+
 **tipe-accelerator-web-app** .NET template pack for scaffolding a full TIPE frontend web application with Angular frontend, ASP.NET backend, local dev-compose, GitOps/Terraform layout, and CI/CD starter files. Stack: dotnet new template (.NET Standard 2.0); outputs ASP.NET 8, Angular, TypeScript, Swagger, Docker. Depends on: tipe-core-components, tipe-core. Used by: template source for repos such as budget-cip-app.
 
 **tipe-accelerator-efcore-svc** .NET template pack for scaffolding a TIPE API backed by Entity Framework Core, including SDK/contracts projects, tenant-management hooks, database/dev scripts, and deployment scaffolding. Stack: dotnet new template (.NET Standard 2.0); outputs ASP.NET 8, EF Core, Swagger, Docker. Depends on: tipe-core. Used by: template source for repos such as budget-cip-svc.
@@ -112,6 +153,7 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Infrastructure (~/enlistments/budget/)
+
 **budget-gitops** GitOps manifest synthesis repo for Budget deployments across CI, QA, and production environments. Generates per-service Kubernetes/application manifests and allowlist config from typed constructs rather than storing only handwritten YAML. Creates a connection between the infrastructure in aws (defined in budget-infrastructure) and the application environment that the application containers run in. Stack: TypeScript, Node.js, eco-gitops CLI/common, cdk8s-style construct synthesis. Depends on: none (budget repos). Used by: most deployable Budget service repos through CI/CD workflow variables pointing GITOPS_REPO at budget-gitops, plus budget-tenant-management-svc and budget-dev-env-compose through generated instance manifests.
 
 **budget-infrastructure** Central Terraform repo for Budget AWS infrastructure and per-service environment configuration. Organizes infra by service and environment (ci/qa/prod/prod-sand) and includes shared platform resources used across the Budget estate. Stack: Terraform, Terraform Cloud, AWS provider modules/workflows. Depends on: none (budget repos). Used by: budget-tf-workspace-management and external/direct infrastructure consumers.
@@ -129,16 +171,19 @@ Budget runs in three environments: **eccci** (CI), **eccqa** (QA), **eccprod** (
 ---
 
 ## Development (~/enlistments/budget/)
+
 **budget-dev-env-compose** Local Budget product development environment repo that layers Budget services and mocked AWS resources on top of the platform dev environment. Provides a scripted LocalStack/bootstrap flow, shared local databases/services, lambda packaging/bootstrap helpers, and maintenance scripts for repo cloning, promotion, and package version updates. Stack: Docker Compose, shell scripting, LocalStack/AWS CLI bootstrap scripts. Depends on: platform-dev-environment-compose, budget-tenant-management-svc. Used by: budget-clientprovisioning-lambda, budget-scorecard-app, budget-infrastructure, and developers running the local Budget stack.
 
 **budget-jumphost** Infrastructure/developer-access repo for secure jumphost and tunnel workflows into protected Budget infrastructure such as RDS-backed environments. Stack: Docker, shell scripting, AWS/SSM-based access helpers. Depends on: none (budget repos). Used by: developers and infrastructure operators needing secure access to protected Budget resources.
 
 ## Lambdas (~/enlistments/budget/)
+
 **budget-clientprovisioning-lambda** AWS Lambda for provisioning Budget tenants from uploaded migration/provisioning packages, including new-tenant and migrated-data bootstrap paths. Stack: C# on .NET 10, AWS Lambda, S3 event handling, LocalStack-enabled local execution. Depends on: budget-dev-env-compose, tipe-core. Used by: provisioning workflows triggered from S3 package uploads and local/provisioning infrastructure flows.
 
 **budget-notification-lambda** AWS Lambda for Budget notification delivery/event handling, packaged with TypeScript/Node.js tooling and deployed with Terraform/workspace-management support. Stack: TypeScript, Node.js, AWS SDK, AWS CDK helpers, SendGrid, SQS. Depends on: none (budget repos). Used by: external/direct infrastructure consumers.
 
 ## Tests (~/enlistments/budget/)
+
 **budget-test-data** Shared test-fixture repository containing Budget contract/integration test data consumed as a git submodule by multiple Budget repos. Stack: JSON and test fixture assets. Depends on: none (budget repos). Used by: budget-api, budget-business-api, budget-business-configuration-svc, budget-cip-svc, budget-data-manager, budget-file-import-api, budget-hub-integration, budget-insights-integration, budget-position-orchestrator-svc, budget-reporting-orchestrator-svc, budget-scorecard-svc.
 
 **budget-automation-taf** Budget UI/API automation test suite built on Tyler Assurance Framework for functional, integration, and environment validation scenarios. Stack: C# on .NET 10, NUnit, TylerAssuranceFramework API and Selenium packages. Depends on: budget-tenant-management-svc. Used by: CI/CD and validation flows exercising Budget environments end to end.
