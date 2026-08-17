@@ -1,12 +1,13 @@
 ---
 name: backend-unit-testing
-description: 'Write backend unit/integration tests in C# using xUnit, Testcontainers, and EF Core against a real PostgreSQL database. Use when: writing manager tests, creating test classes with DatabaseFixture, adding tests that use TransactionalDbContext, writing tests with ChangeTracker.Clear(), hardcoding entity Ids, arranging minimal test data, or following team unit test standards and patterns.'
-argument-hint: 'Describe the manager method or behavior to test'
+description: "Write backend unit/integration tests in C# using xUnit, Testcontainers, and EF Core against a real PostgreSQL database. Use when: writing manager tests, creating test classes with DatabaseFixture, adding tests that use TransactionalDbContext, writing tests with ChangeTracker.Clear(), hardcoding entity Ids, arranging minimal test data, or following team unit test standards and patterns."
+argument-hint: "Describe the manager method or behavior to test"
 ---
 
 # Backend Unit Testing
 
 ## When to Use
+
 - Writing or generating new manager test classes or test methods
 - Adding tests for methods that query a database (WHERE clause coverage)
 - Following the team's patterns for test isolation, minimal data, and expected values
@@ -16,6 +17,7 @@ argument-hint: 'Describe the manager method or behavior to test'
 ## Core Principles
 
 ### Test Isolation via Transactional Rollback
+
 Every test that does **not** use an internal transaction must use a `TransactionalDbContext`. The transaction is never committed — EF Core rolls it back automatically when the `await using` block exits:
 
 ```csharp
@@ -23,7 +25,9 @@ await using DatabaseFixture.TransactionalDbContext transactionalContext = await 
 ```
 
 ### Methods That Contain Internal Transactions
+
 If the method under test opens its own transaction, it cannot nest inside the shared rollback transaction. These test classes must:
+
 - Spin up their own `DatabaseFixture` (not use the shared collection)
 - Implement `IAsyncLifetime` to clean up tables after each test
 
@@ -47,6 +51,7 @@ public class MyManagerTests
 Every test follows the **Arrange / Act / Assert** structure.
 
 ### Arrange
+
 1. Create the `TransactionalDbContext`
 2. Instantiate and save minimal entity data to the database
 3. Call `transactionalContext.Context.ChangeTracker.Clear()` after saving
@@ -54,11 +59,14 @@ Every test follows the **Arrange / Act / Assert** structure.
 5. Write out the expected value manually
 
 ### Act
+
 One action per test. Call the method under test.
 
 ### Assert
+
 Always use `Assert.Equivalent(..., strict: true)`. Strict mode ensures every field on the expected object is matched and no extra fields on the actual object are silently ignored. Use `Assert.EquivalentWithExclusions` (also with `strict: true`) when the returned object includes parent navigation properties that should not be compared.
-When expecting a single item from a collection, assert count first, then equivalence:
+For collection-returning methods where behavior is about filtering or returned content, assert the full expected collection with `Assert.Equivalent(..., strict: true)` instead of count-only checks. Use count assertions only when cardinality itself is the behavior under test.
+When cardinality is the behavior under test, assert count first, then equivalence:
 
 ```csharp
 Assert.Single(actualItems);
@@ -88,17 +96,19 @@ Failure to clear causes tests to pass for the wrong reason (returning in-memory 
 
 Use a unique, high-value Id series per entity type:
 
-| Entity | Example Id Series |
-|--------|-------------------|
-| First entity type | 10001, 10002, … |
-| Second entity type | 11001, 11002, … |
-| Third entity type | 12001, 12002, … |
+| Entity             | Example Id Series |
+| ------------------ | ----------------- |
+| First entity type  | 10001, 10002, …   |
+| Second entity type | 11001, 11002, …   |
+| Third entity type  | 12001, 12002, …   |
 
 **Why:**
+
 - Avoids confusion when multiple entities share an Id of `1`
 - Prevents key violations when the database sequencer auto-assigns the same value
 
 ### POST-type tests: when you cannot hardcode the Id
+
 If the business logic rejects a pre-set Id, reset the database sequence:
 
 ```csharp
@@ -127,6 +137,7 @@ MyEntity expected = new()
 ## Effective Test Coverage
 
 Examine the method under test:
+
 - Identify every **parameter** that changes the query or outcome — test each in isolation
 - Examine the **WHERE clause** — write a focused test for each filter condition
 - Prefer one Action and one Assert per test
@@ -141,6 +152,13 @@ Examine the method under test:
 - Do **not** use magic strings — assign constants
 - Do **not** skip `ChangeTracker.Clear()` between context operations
 - Do **not** test multiple concerns in a single test method
+
+## Preferred patterns
+
+- prefer use of `Assert.Equivalent` with `strict: true` to ensure all expected fields are present and no unexpected fields are returned over multiple asserts.
+- for filter/content tests returning collections, prefer a single strict equivalence against an explicit expected collection over separate count/name assertions.
+- Avoid unnecesary extra asserts.
+- Ensure any asserts added would clearly reflect the failure that is being checked for.
 
 ## Full Example
 
