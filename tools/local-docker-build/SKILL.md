@@ -16,20 +16,28 @@ Use this skill when building a service locally and deploying it into the local d
 
 ## Step 1 — Increment the version
 
-Version format: `0.0.1-TPB{ticket}.{increment}`
+Version format: SemVer 2.0.0. The usual repository format is
+`0.0.1-TPB{ticket}.{increment}`.
 
 - Ask the user for the last version if unknown, or check session context.
 - Increment only the final integer (e.g. `.7` → `.8`).
+- If the user supplies a unique identifier that is not itself SemVer (for example,
+  `CG.1`), preserve it as a SemVer prerelease identifier: `0.0.0-CG.1`.
+- Use the resulting normalized version for the application image and append `-db`
+  for the database migration image.
 - If a build fails without pushing, retry with the same version before incrementing.
 
 ## Step 2 — Build and push
 
-Run from the repo root (not inside `build-scripts/`):
+Run from the service repository's `build-scripts/` directory:
 
 ```bash
-cd build-scripts && ./build.sh --push-app --push-nuget --version-override <version>
+cd build-scripts && ./build.sh --no-clone --push-app --push-database --push-nuget --version-override <version>
 ```
 
+- `--no-clone` keeps the repository's checked-out shared build scripts in place.
+- `--push-database` is required when the Compose stack has a database migration
+  service that consumes the `-db` image.
 - Check exit code. A non-zero exit means the build failed and the image was **not** pushed.
 - Common failure: Docker image export canceled — retry once before incrementing.
 
@@ -50,12 +58,22 @@ To switch the service to your scratch build:
 1. Comment out the `image: {service}:local` line
 2. Uncomment the scratch `image:` line and replace `<version>` with the new version
 
+For services with a database migration companion, update both image references:
+
+```yaml
+  budget-config-api:
+    image: tylertech-scratch-docker-local.jfrog.io/budget-config-api:0.0.0-CG.1
+
+  budget-config-api-dbmigration:
+    image: tylertech-scratch-docker-local.jfrog.io/budget-config-api:0.0.0-CG.1-db
+```
+
 Result:
 ```yaml
   budget-config-api:
     # image: budget-config-api:local
     # To use a scratch image, run the build script for the service or app, then comment out the image above and uncomment the image below, replacing the version accordingly
-    image: tylertech-scratch-docker-local.jfrog.io/budget-config-api:0.0.1-TPB19291.9
+    image: tylertech-scratch-docker-local.jfrog.io/budget-config-api:0.0.0-CG.1
 ```
 
 If the scratch line is already uncommented (user previously switched it), just update the version string in place.
@@ -65,12 +83,19 @@ If the scratch line is already uncommented (user previously switched it), just u
 ### Take down
 ```bash
 cd budget-dev-env-compose/docker-compose
-docker compose --profile everything down
+docker compose -f docker-compose.yml -f docker-compose.arm64-mac.yml --profile everything down
 ```
+
+Wait for `down` to succeed and verify the service containers are stopped before
+starting the stack. Never run `up` against the old stack as a substitute for
+tearing it down first.
 
 ### Bring back up (default — PC/Linux)
 ```bash
 ./startup.sh everything
 ```
 
-> **macOS arm64 override**: see `.instructions.md`. If the user is on an M-series Mac, use the arm64 command instead of `startup.sh`.
+> **macOS arm64 override**: use the following command instead of `startup.sh`:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.arm64-mac.yml --profile everything up -d
+```
