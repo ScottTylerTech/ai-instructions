@@ -8,6 +8,10 @@ argument-hint: 'Service repo path and last used version string'
 
 Use this skill when building a service locally and deploying it into the local docker-compose stack.
 
+This is a routine workflow. Keep user-facing updates to one brief completion message. Do not ask
+for confirmation or provide step-by-step narration unless blocked or a destructive/unexpected
+operation requires attention. Do not run tests for this workflow.
+
 ## When to Use
 - Testing local code changes in the full docker-compose stack
 - Building and pushing a new scratch image after code edits
@@ -19,8 +23,13 @@ Use this skill when building a service locally and deploying it into the local d
 Version format: SemVer 2.0.0. The usual repository format is
 `0.0.1-TPB{ticket}.{increment}`.
 
-- Ask the user for the last version if unknown, or check session context.
-- Increment only the final integer (e.g. `.7` → `.8`).
+- Find the current version in the service's compose image reference, recent build output, or
+  equivalent local service configuration. Do not ask the user for the last version when it can be
+  discovered from the workspace.
+- Increment only the final integer (e.g. `.7` → `.8`). If no prior version exists, tell the user
+  that no version was found and ask which identifier to use (for example, their initials or ticket
+  key). Wait for that identifier before building; do not assume `CG` or any other engineer-specific
+  value.
 - If the user supplies a unique identifier that is not itself SemVer (for example,
   `CG.1`), preserve it as a SemVer prerelease identifier: `0.0.0-CG.1`.
 - Use the resulting normalized version for the application image and append `-db`
@@ -32,12 +41,13 @@ Version format: SemVer 2.0.0. The usual repository format is
 Run from the service repository's `build-scripts/` directory:
 
 ```bash
-cd build-scripts && ./build.sh --no-clone --push-app --push-database --push-nuget --version-override <version>
+cd build-scripts && ./build.sh --no-clone --push-app --push-database --version-override <version>
 ```
 
 - `--no-clone` keeps the repository's checked-out shared build scripts in place.
 - `--push-database` is required when the Compose stack has a database migration
   service that consumes the `-db` image.
+- Do not pass `--push-nuget`; NuGet publication is not needed for this local service restart.
 - Check exit code. A non-zero exit means the build failed and the image was **not** pushed.
 - Common failure: Docker image export canceled — retry once before incrementing.
 
@@ -86,9 +96,7 @@ cd budget-dev-env-compose/docker-compose
 docker compose -f docker-compose.yml -f docker-compose.arm64-mac.yml --profile everything down
 ```
 
-Wait for `down` to succeed and verify the service containers are stopped before
-starting the stack. Never run `up` against the old stack as a substitute for
-tearing it down first.
+Wait for `down` to succeed before starting the stack. A separate status check is unnecessary.
 
 ### Bring back up (default — PC/Linux)
 ```bash
@@ -99,3 +107,9 @@ tearing it down first.
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.arm64-mac.yml --profile everything up -d
 ```
+
+## Completion
+
+After `up -d`, verify only that the service image and migration image are attached to the
+expected containers. Report the version and whether the API is running and migration completed.
+Do not run tests. Do not include build logs or routine intermediate updates.
