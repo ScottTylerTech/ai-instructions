@@ -1,0 +1,9 @@
+* @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+/terraform/ @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+/build-scripts/ @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+/.harness/ @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+/.github/ @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+.gitignore @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+.gitattributes @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+.pre-commit-config.yaml @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
+Dockerfile @tyler-technologies/erp-operations @tyler-technologies/budget-approvers @tyler-technologies/budget-devs-1 @tyler-technologies/budget-devs-2 @tyler-technologies/budget-devs-3
