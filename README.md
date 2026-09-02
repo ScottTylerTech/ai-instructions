@@ -45,9 +45,9 @@ The root `.instructions.md` remains as a legacy user-instruction entry point for
 
 ## Release Process
 
-There is no manual version bump. After a pull request is merged into `main`, the release preparation workflow opens or updates a patch-version release pull request for `plugin.json`.
+There is no separate release pull request or manual version bump. Each pull request merged into `main` runs the release workflow, which increments the patch version in `plugin.json` and commits the update directly to `main`.
 
-After that release pull request is approved and merged into `main`, the release workflow creates the matching tag and GitHub Release, builds the Pages catalog, and deploys GitHub Pages. A release fails if the version tag already exists for a different commit.
+The same workflow creates the matching tag and GitHub Release, builds the Pages catalog, and deploys GitHub Pages. A release fails if the version tag already exists for a different commit.
 
 
 ## How To Add A New Skill
