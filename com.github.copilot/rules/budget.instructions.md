@@ -65,10 +65,9 @@ Notes:
 
 ## Category References
 
-- Backend guidance: backend/README.md
-- Frontend guidance: frontend/README.md
-- Infrastructure references and skills: infrastructure/README.md
-- Tooling guidance: tools/README.md
+- Backend and frontend guidance: README.md
+- Infrastructure references: infrastructure/CODEBASE_MAP.md
+- Tooling guidance: README.md
 
 ## macOS arm64 Docker Override
 
@@ -120,16 +119,16 @@ from `budget-dev-env-compose/docker-compose/`.
 ## Skill Routing Hints
 
 - Route by domain: backend skills for API/persistence/transactions/backend feature flags; frontend skills for Angular/NgRx/RxJS/frontend feature-flag and UI-state patterns; infrastructure docs for deployment/snapshots/architecture; tools docs for command safety and scripting.
-- `backend/unit-testing/SKILL.md`: C# manager/integration tests using xUnit, Testcontainers, EF Core, `DatabaseFixture`, or transactional isolation.
-- `backend/compensating-transactions/SKILL.md`: BFF/orchestrator flows with multiple non-read operations requiring distributed rollback.
-- `backend/api-contract-changes/SKILL.md`: request/response fields, enums, status codes, error payloads, endpoint behavior, DTO boundaries, or client-facing API docs.
-- `backend/migrations/SKILL.md`: EF/table/column/index/constraint/foreign-key/backfill changes and migration rollout/rollback behavior.
-- `frontend/angular-best-practices/SKILL.md`: Angular template review/migration, including `*ngIf`, `*ngFor`, `*ngSwitch`, `@if`, `@for`, `@switch`, `@let`, `@defer`.
-- `tools/pre-pr-diff-review/SKILL.md`: review current branch vs base branch before PRs, especially after refactors, contract changes, migrations, state management, or authorization changes.
-- `tools/local-docker-build/SKILL.md`: image build/publish/versioning, service image updates, or local stack/container restart requests (for example: "build a new image", "use version X", "update services").
+- `skills/unit-testing/SKILL.md`: C# manager/integration tests using xUnit, Testcontainers, EF Core, `DatabaseFixture`, or transactional isolation.
+- `skills/compensating-transactions/SKILL.md`: BFF/orchestrator flows with multiple non-read operations requiring distributed rollback.
+- `skills/api-contract-changes/SKILL.md`: request/response fields, enums, status codes, error payloads, endpoint behavior, DTO boundaries, or client-facing API docs.
+- `skills/backend-migrations/SKILL.md`: EF/table/column/index/constraint/foreign-key/backfill changes and migration rollout/rollback behavior.
+- `skills/angular-best-practices/SKILL.md`: Angular template review/migration, including `*ngIf`, `*ngFor`, `*ngSwitch`, `@if`, `@for`, `@switch`, `@let`, `@defer`.
+- `skills/pre-pr-diff-review/SKILL.md`: review current branch vs base branch before PRs, especially after refactors, contract changes, migrations, state management, or authorization changes.
+- `skills/local-docker-build/SKILL.md`: image build/publish/versioning, service image updates, or local stack/container restart requests (for example: "build a new image", "use version X", "update services").
 - Mandatory Docker trigger: when asked to build a new version/image/container/local stack for an existing service, always treat as `local-docker-build`, even if brief or missing Compose/scratch/publishing language.
-- First repository action for that trigger must be reading `/Users/christopher.gerdes/development/enlistments/budget-ai-instructions/tools/local-docker-build/SKILL.md` in full. It is controlling procedure. Before reading it, do not inspect/edit Dockerfiles, build scripts, Compose files, manifests, or version refs, and do not run commands. Do not route these requests to project-setup or general backend guidance.
-- Example: "Please build a new version of this and get it running in docker" must load `tools/local-docker-build/SKILL.md` immediately.
+- First repository action for that trigger must be reading `skills/local-docker-build/SKILL.md` in full. It is controlling procedure. Before reading it, do not inspect/edit Dockerfiles, build scripts, Compose files, manifests, or version refs, and do not run commands. Do not route these requests to project-setup or general backend guidance.
+- Example: "Please build a new version of this and get it running in docker" must load `skills/local-docker-build/SKILL.md` immediately.
 
 ## Response Expectations
 

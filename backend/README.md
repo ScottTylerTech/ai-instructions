@@ -5,11 +5,11 @@ Use backend skills for API behavior, transactions, persistence, and backend feat
 Keep data-layer entities internal to service persistence; expose DTO/client contracts across BBF and frontend boundaries.
 
 ## Skills
-- unit-testing/SKILL.md: xUnit, Testcontainers, EF Core transactional test patterns.
-- compensating-transactions/SKILL.md: distributed transaction rollback design and testing.
-- feature-flags/SKILL.md: Harness-backed feature-flag integration with BFF mediation.
-- api-contract-changes/SKILL.md: starter checklist for safe API contract evolution.
-- migrations/SKILL.md: EF Core migration authoring, review, rollout, and rollback safety.
+- ../skills/unit-testing/SKILL.md: xUnit, Testcontainers, EF Core transactional test patterns.
+- ../skills/compensating-transactions/SKILL.md: distributed transaction rollback design and testing.
+- ../skills/backend-feature-flags/SKILL.md: Harness-backed feature-flag integration with BFF mediation.
+- ../skills/api-contract-changes/SKILL.md: starter checklist for safe API contract evolution.
+- ../skills/backend-migrations/SKILL.md: EF Core migration authoring, review, rollout, and rollback safety.
 
 ## Typical Trigger Prompts
 - Write tests for this manager query using EF Core and PostgreSQL.

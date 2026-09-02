@@ -1,12 +1,12 @@
 ---
-name: feature-flags
+name: frontend-feature-flags
 description: 'Frontend feature flag usage patterns for Angular and TypeScript. Use when wiring NGRX-backed flag loading, consuming flags in components/services, handling maintenance-mode exceptions, and managing temporary flag conditionals with cleanup TODO comments.'
 argument-hint: 'Describe the Angular feature flag flow or component usage to implement or review'
 ---
 
 # Frontend Feature Flags (Angular + TypeScript)
 
-This skill is frontend-focused. Backend and BFF implementation details are in `backend/feature-flags/SKILL.md`.
+This skill is frontend-focused. Backend and BFF implementation details are in `skills/backend-feature-flags/SKILL.md`.
 
 ## Core rule
 - All feature flag evaluations flow through the BFF and shared framework.

@@ -1,12 +1,12 @@
 ---
-name: feature-flags
+name: backend-feature-flags
 description: 'Backend and BFF feature flag integration with Harness .NET SDK. Use when adding server-side flag evaluation, configuring target details, updating backend behavior behind flags, or writing BFF/controller tests for flag-on and flag-off paths.'
 argument-hint: 'Describe the backend or BFF feature flag scenario to implement or review'
 ---
 
 # Backend Feature Flags (BFF + API)
 
-This skill is backend-focused. For Angular and TypeScript usage patterns, use `frontend/feature-flags/SKILL.md`.
+This skill is backend-focused. For Angular and TypeScript usage patterns, use `skills/frontend-feature-flags/SKILL.md`.
 
 ## Harness context
 - Environments: CI, QA, and Prod

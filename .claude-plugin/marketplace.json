@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "budget-ai-tools",
+  "owner": {
+    "name": "Tyler Technologies",
+    "url": "https://github.com/tyler-technologies"
+  },
+  "description": "Model-agnostic coding guidance and workflow skills for budget platform development.",
+  "plugins": [
+    {
+      "name": "budget-ai-instructions",
+      "source": "./",
+      "description": "Backend, frontend, infrastructure, and developer tooling skills for coding agents.",
+      "repository": "https://github.com/tyler-technologies/budget-ai-instructions",
+      "keywords": [
+        "coding-agents",
+        "github-copilot",
+        "budget"
+      ]
+    }
+  ]
+}

@@ -3,8 +3,8 @@
 Use tools guidance for command safety, script hygiene, and repeatable developer automation.
 
 ## Skills
-- command-safety/SKILL.md: starter checklist before running repo commands and scripts.
-- pre-pr-diff-review/SKILL.md: aggressive current-branch diff review for flaws, anti-patterns, and merge risk before opening a PR.
+- ../skills/command-safety/SKILL.md: starter checklist before running repo commands and scripts.
+- ../skills/pre-pr-diff-review/SKILL.md: aggressive current-branch diff review for flaws, anti-patterns, and merge risk before opening a PR.
 
 ## References
 - scripting/SCRIPTING.md: scripting patterns and team conventions.

@@ -1,5 +1,5 @@
 ---
-name: backend-unit-testing
+name: unit-testing
 description: "Write backend unit/integration tests in C# using xUnit, Testcontainers, and EF Core against a real PostgreSQL database. Use when: writing manager tests, creating test classes with DatabaseFixture, adding tests that use TransactionalDbContext, writing tests with ChangeTracker.Clear(), hardcoding entity Ids, arranging minimal test data, or following team unit test standards and patterns."
 argument-hint: "Describe the manager method or behavior to test"
 ---

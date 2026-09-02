@@ -1,0 +1,130 @@
+name: Release Agent Plugin
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: release-plugin
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate plugin manifests and skills
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          node -e "for (const file of ['plugin.json', '.claude-plugin/marketplace.json']) JSON.parse(require('fs').readFileSync(file, 'utf8'))"
+
+          mapfile -t skill_files < <(find skills -mindepth 2 -maxdepth 2 -type f -name SKILL.md | sort)
+          test "${#skill_files[@]}" -gt 0
+
+          declare -A skill_names
+          for skill_file in "${skill_files[@]}"; do
+            skill_dir=$(basename "$(dirname "$skill_file")")
+            skill_name=$(sed -n 's/^name: //p' "$skill_file" | head -1 | tr -d '\r')
+            test -n "$skill_name"
+            test "$skill_dir" = "$skill_name"
+            test -z "${skill_names[$skill_name]+set}"
+            skill_names[$skill_name]=1
+          done
+
+          plugin_name=$(node -p "require('./plugin.json').name")
+          plugin_version=$(node -p "require('./plugin.json').version")
+          test "$plugin_name" = "budget-ai-instructions"
+          node -e "if (!/^([0-9]+)\\.([0-9]+)\\.([0-9]+)$/.test(process.argv[1])) process.exit(1)" "$plugin_version"
+
+      - name: Increment patch version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          old_version=$(node -p "require('./plugin.json').version")
+          new_version=$(node -e "const [major, minor, patch] = process.argv[1].split('.').map(Number); console.log([major, minor, patch + 1].join('.'))" "$old_version")
+          node - "$new_version" <<'NODE'
+          const fs = require('fs');
+          const newVersion = process.argv[2];
+          const file = 'plugin.json';
+          const manifest = JSON.parse(fs.readFileSync(file, 'utf8'));
+          manifest.version = newVersion;
+          fs.writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`);
+          NODE
+          echo "version=$new_version" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and tag release
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plugin.json
+          git commit -m "chore: release plugin v${VERSION}"
+          git tag "v${VERSION}"
+          git push origin HEAD:main "v${VERSION}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: gh release create "v${VERSION}" --title "budget-ai-instructions v${VERSION}" --generate-notes
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build documentation site
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf site
+          cp -R docs/. site
+          cp -R skills site/skills
+          mkdir -p site/skills
+          node - "$VERSION" <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const version = process.argv[2];
+          const skills = fs.readdirSync('skills', { withFileTypes: true })
+            .filter(entry => entry.isDirectory())
+            .sort((left, right) => left.name.localeCompare(right.name));
+          const catalog = skills.map(skill => {
+            const frontmatter = fs.readFileSync(path.join('skills', skill.name, 'SKILL.md'), 'utf8')
+              .split('---')[1] || '';
+            const description = (frontmatter.match(/^description:\s*['"]?(.+?)['"]?\s*$/m) || [, ''])[1];
+            const domain = skill.name.includes('backend') || ['api-contract-changes', 'compensating-transactions', 'unit-testing'].includes(skill.name) ? 'backend' : skill.name.includes('frontend') || ['angular-best-practices', 'forge-components', 'observables', 'state-management', 'ui-state-resilience'].includes(skill.name) ? 'frontend' : ['change-safety'].includes(skill.name) ? 'infrastructure' : 'tools';
+            return { name: skill.name, description, domain };
+          });
+          fs.writeFileSync('site/skills.json', JSON.stringify(catalog, null, 2) + '\n');
+          fs.writeFileSync('site/version.json', JSON.stringify({ name: 'budget-ai-instructions', version }, null, 2) + '\n');
+          NODE
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

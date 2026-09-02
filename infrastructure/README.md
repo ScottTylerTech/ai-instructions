@@ -3,7 +3,7 @@
 Use this area for architecture context, environment defaults, deployment conventions, and infra-safe change workflows.
 
 ## Skills
-- change-safety/SKILL.md: starter checklist for safe infrastructure changes.
+- ../skills/change-safety/SKILL.md: starter checklist for safe infrastructure changes.
 
 ## References
 - CODEBASE_MAP.md: service and dependency topology.

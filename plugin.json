@@ -1,0 +1,17 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "budget-ai-instructions",
+  "version": "1.0.0",
+  "description": "Model-agnostic coding guidance and on-demand skills for backend, frontend, infrastructure, and developer tooling work.",
+  "author": {
+    "name": "Tyler Technologies"
+  },
+  "repository": "https://github.com/tyler-technologies/budget-ai-instructions",
+  "keywords": [
+    "coding-agents",
+    "github-copilot",
+    "angular",
+    "dotnet",
+    "infrastructure"
+  ]
+}

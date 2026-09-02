@@ -1,53 +1,47 @@
-# Budget AI Skills Repository
+# Budget AI Instructions Plugin
 
-This repository contains model-agnostic AI skill guidance tuned for VS Code Copilot.  It can be reconfigured to be model-specific by making a copy of `.instruction.md` and renaming the file accordingly.
-(e.g. `.CLAUDE.md` for Anthropic models).  When setting up, point the user settings to that file instead of `.instruction.md`
+This repository is an Agent Plugins 1.0 package containing model-agnostic coding guidance for GitHub Copilot, Copilot CLI, Claude, and other compatible coding agents. Portable skills live under `skills/`; Copilot-specific always-on rules live under `com.github.copilot/rules/`.
 
 ## Repository Layout
-- .instructions.md: root instruction file to load in Copilot chat settings.
-- backend/: backend coding skills.
-- frontend/: frontend coding skills.
-- infrastructure/: architecture, deployment, and infra-focused guidance.
-- tools/: scripting and command safety guidance.
+- plugin.json: portable Agent Plugins manifest.
+- .claude-plugin/marketplace.json: marketplace catalog for Claude-compatible marketplace clients.
+- skills/: portable, on-demand coding skills.
+- com.github.copilot/rules/: Copilot-specific always-on rules.
+- docs/: static GitHub Pages catalog and installation site.
+- infrastructure/: architecture reference documentation.
+- backend/, frontend/, and tools/: domain indexes and reference guidance.
 
-## Setup In VS Code
+## Install In VS Code
 
-Clone this repo once to a stable location. After setup, Copilot loads `.instructions.md` and
-routes to the appropriate SKILL.md automatically in every workspace — no per-repo configuration required.
+Install the plugin directly from GitHub with **Chat: Install Plugin From Source**, or configure this repository as a marketplace:
 
-1. **Clone** this repo to a permanent path on your machine (e.g. `~/repos/budget-ai-instructions`).
+```jsonc
+"chat.plugins.marketplaces": [
+   "tyler-technologies/budget-ai-instructions"
+]
+```
 
-2. **Open VS Code user settings** (`Ctrl+Shift+P` → *Preferences: Open **User** Settings (JSON)*).
+Open Extensions, filter by `@agentPlugins`, and install `budget-ai-instructions`. VS Code caches the installed plugin and checks for updates through **Extensions: Check for Extension Updates** or automatic extension updates.
+
+For a local checkout, register it with:
 
 3. **Add or merge** the following, replacing the path with your actual clone location:
-   ```jsonc
-   "chat.instructionsFilesLocations": {
-     "/your/path/to/budget-ai-instructions": true
-   }
-   ```
-   example: `"~/Skywalker/budget/budget-ai-instructions/.instructions.md": true,`
+```jsonc
+"chat.pluginLocations": {
+   "/path/to/budget-ai-instructions": true
+}
+```
 
-   If the key already exists, add the new entry alongside any existing ones.
-
-4. **Reload the window** (`Ctrl+Shift+P` → *Reload Window*).
-
-5. **Verify** by opening any of your repositories and asking Copilot: "What repository rules apply here?"
-
-> **Note:** This setting lives in your personal VS Code profile, not in any repo. Each team member
-> performs this setup once after cloning.  You will not be able to manually add the instruction file 
-> from the chat settings.  It must be set via your user settings in VS code.
+Verify by opening any coding workspace and asking the agent which relevant skills are available.
 
 
 
 ![instructions settings](public/images/image.png)
 
 
-## Use
-The main instruction file is hardcoded in the setup and reads from an external repository.
-Because of this, when a chat session is started you will be asked to allow reading outside the working directory.  
-**Click allow**.
-This is a limitation to housing the AI skills in its own repository.
-![allow-in-session](public/images/image-1.png)
+## Compatibility
+
+The root `.instructions.md` remains as a legacy user-instruction entry point for existing setups. New installations should use the plugin manifest; plugin-installed skills are copied into the agent's local cache and do not require this repository to remain open.
 
 
 ## How To Add A New Skill
@@ -58,15 +52,14 @@ Below are a few resources for learning about skills.  Fortunately, skills are us
 **OpenAI** - https://openai.com/academy/skills/?utm_source=chatgpt.com
 **Anthropic/ Claude** - https://claude.com/skills
 
-1. Pick the correct domain folder: backend, frontend, infrastructure, or tools.
-2. Create a focused subfolder and add SKILL.md.
+1. Create a focused subfolder under `skills/` and add `SKILL.md`.
 3. Include YAML frontmatter with at least:
    - name
    - description
    - argument-hint
 4. Keep scope narrow and actionable - single topics
-5. Add the skill path to .instructions.md Skill Index.
-6. Update the domain README with the new skill and trigger guidance.
+5. Ensure the folder name and frontmatter `name` match and are unique across the plugin.
+6. Update the relevant domain README and the Copilot rule's skill index.
 
 Coding agents are particularly good at creating skills for themselves, especially when basing it off of something within our codebase.  The easiest way to create them is to ask an agent to generate one with guidance.  The skills here were all agentically generated.
 
