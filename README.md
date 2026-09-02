@@ -11,32 +11,9 @@ This repository is an Agent Plugins 1.0 package containing model-agnostic coding
 - infrastructure/: architecture reference documentation.
 - backend/, frontend/, and tools/: domain indexes and reference guidance.
 
-## Install In VS Code
+## Installation
 
-Install the plugin directly from GitHub with **Chat: Install Plugin From Source**, or configure this repository as a marketplace:
-
-```jsonc
-"chat.plugins.marketplaces": [
-   "tyler-technologies/budget-ai-instructions"
-]
-```
-
-Open Extensions, filter by `@agentPlugins`, and install `budget-ai-instructions`. VS Code caches the installed plugin and checks for updates through **Extensions: Check for Extension Updates** or automatic extension updates.
-
-For a local checkout, register it with:
-
-3. **Add or merge** the following, replacing the path with your actual clone location:
-```jsonc
-"chat.pluginLocations": {
-   "/path/to/budget-ai-instructions": true
-}
-```
-
-Verify by opening any coding workspace and asking the agent which relevant skills are available.
-
-
-
-![instructions settings](public/images/image.png)
+For Copilot CLI and VS Code installation instructions, including the preferred GitHub-source update path, see the [Budget AI Instructions installation guide](https://scotttylertech.github.io/ai-instructions/#install).
 
 
 ## Compatibility
