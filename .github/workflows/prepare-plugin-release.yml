@@ -1,0 +1,57 @@
+name: Prepare Agent Plugin Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - plugin.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: prepare-plugin-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate next patch version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_version=$(node -p "require('./plugin.json').version")
+          next_version=$(node -e "const [major, minor, patch] = process.argv[1].split('.').map(Number); console.log([major, minor, patch + 1].join('.'))" "$current_version")
+          node - "$next_version" <<'NODE'
+          const fs = require('fs');
+          const nextVersion = process.argv[2];
+          const manifest = JSON.parse(fs.readFileSync('plugin.json', 'utf8'));
+          manifest.version = nextVersion;
+          fs.writeFileSync('plugin.json', `${JSON.stringify(manifest, null, 2)}\n`);
+          NODE
+          echo "version=$next_version" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update release pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ github.token }}
+          commit-message: "chore: release plugin v${{ steps.version.outputs.version }}"
+          title: "chore: release plugin v${{ steps.version.outputs.version }}"
+          body: |
+            Automated plugin release preparation.
+
+            This pull request updates `plugin.json` to `v${{ steps.version.outputs.version }}`.
+            Merge it after the required administrator/CODEOWNER approval. The release workflow will then create the tag, GitHub Release, and GitHub Pages deployment.
+          branch: automation/plugin-release
+          delete-branch: true
+          labels: release
