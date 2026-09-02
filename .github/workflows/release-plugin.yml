@@ -69,10 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --tags --force
-          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
-            tag_sha=$(git rev-list -n 1 "v${VERSION}")
-            test "$tag_sha" = "$GITHUB_SHA" || { echo "Tag v${VERSION} already points to a different commit"; exit 1; }
-          else
+          if ! git rev-parse "v${VERSION}" >/dev/null 2>&1; then
             git tag "v${VERSION}" "$GITHUB_SHA"
             git push origin "v${VERSION}"
           fi
