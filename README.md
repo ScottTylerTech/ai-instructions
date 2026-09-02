@@ -43,6 +43,12 @@ Verify by opening any coding workspace and asking the agent which relevant skill
 
 The root `.instructions.md` remains as a legacy user-instruction entry point for existing setups. New installations should use the plugin manifest; plugin-installed skills are copied into the agent's local cache and do not require this repository to remain open.
 
+## Release Process
+
+There is no separate release pull request. Include the patch version bump in the same pull request as the skill or documentation change, for example `1.0.2` to `1.0.3` in `plugin.json`. The normal CODEOWNER review covers the complete change.
+
+After that pull request is merged into `main`, the release workflow creates the matching tag and GitHub Release, builds the Pages catalog, and deploys GitHub Pages. A release fails if the version tag already exists for a different commit.
+
 
 ## How To Add A New Skill
 Below are a few resources for learning about skills.  Fortunately, skills are used universally, but the syntax might differ slightly depending on the model.  This respository is model-agnostic, (for now) our license for Github Copilot has multiple models.  
