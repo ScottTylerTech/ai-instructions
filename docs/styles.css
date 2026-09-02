@@ -67,3 +67,15 @@ h3 { margin: 14px 0 8px; font-size: 20px; }
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 760px) { .topbar { height: 64px; }.topnav a:not(.icon-link) { display: none; }.hero { display: block; padding-top: 64px; }.hero-panel { max-width: 430px; margin-top: 48px; }.install-grid, .skill-list { grid-template-columns: 1fr; }.catalog-header { display: block; }.catalog-controls { margin-top: 25px; }.catalog-meta { margin-top: 25px; }.footer { display: block; }.footer a { display: block; margin-top: 8px; } }
 @media (max-width: 420px) { h1 { font-size: 38px; }.catalog-controls { display: block; }.select-field { width: 100%; margin-top: 9px; }.stats { gap: 18px; }.instruction-card { padding: 21px; } }
+
+.contribution-section { border-top: 1px solid var(--line); }
+.contribution-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin: 42px 0 0; padding: 0; list-style: none; }
+.contribution-steps li { display: flex; gap: 15px; }
+.contribution-number { display: grid; flex: 0 0 auto; place-items: center; width: 34px; height: 34px; color: white; background: var(--teal-700); border-radius: 4px; font: 700 11px 'Space Grotesk', sans-serif; }
+.contribution-steps h3 { margin: 4px 0 8px; font-size: 18px; }
+.contribution-steps p { margin: 0; color: var(--muted); font-size: 13px; }
+.contribution-steps code { padding: 1px 4px; color: var(--teal-800); background: var(--teal-100); border-radius: 2px; font: 12px ui-monospace, SFMono-Regular, Consolas, monospace; }
+.contribution-action { margin-top: 37px; color: white; background: var(--teal-700); }
+.contribution-action:hover { background: var(--teal-800); }
+
+@media (max-width: 760px) { .contribution-steps { grid-template-columns: 1fr; } }
